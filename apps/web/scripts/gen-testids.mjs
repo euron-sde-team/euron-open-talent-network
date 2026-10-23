@@ -64,4 +64,6 @@ for (const area of order) {
   for (const id of [...ids.keys()].sort()) md += `| \`${id}\` | ${[...ids.get(id)].sort().map((f) => `\`${f}\``).join(", ")} |\n`;
 }
 writeFileSync(join(root, "TESTIDS.md"), md);
+// A command-line script: printing the summary is its output.
+// eslint-disable-next-line no-console
 console.log(`TESTIDS.md: ${[...groups.values()].reduce((n, m) => n + m.size, 0)} ids`);
