@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="650" viewBox="0 0 1280 650" role="img" aria-labelledby="t d">
+  <title id="t">Hiring pipeline stages</title>
+  <desc id="d">Applications move through APPLIED, SCREENING, INTERVIEW and OFFER to HIRED. The team may move a card forward to any later open stage or HIRED, or back to any earlier open stage. Any open stage can be REJECTED by the team with a reason, and a rejected application can be reopened into SCREENING. Only the candidate can withdraw. HIRED and WITHDRAWN are final. The board updates live for the team; the candidate sees a timeline of stage changes, never team notes or ratings.</desc>
+  <style>
+    .t { font-family: Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif; }
+    .m { font-family: JetBrains Mono, SFMono-Regular, Menlo, monospace; }
+    .h { font-size: 16px; font-weight: 650; fill: #edf1ff; }
+    .s { font-size: 13px; fill: #97a3c2; }
+    .x { font-size: 12px; fill: #6f7b9c; }
+    .box { fill: #111833; stroke: #283258; stroke-width: 1.2; }
+    .hot { fill: #111d3d; stroke: #5b8cff; stroke-opacity: 0.6; stroke-width: 1.4; }
+    .bad { fill: #2a1420; stroke: #f87171; stroke-opacity: 0.55; stroke-width: 1.3; }
+    .ok { fill: #0f2421; stroke: #34d399; stroke-opacity: 0.5; stroke-width: 1.3; }
+    .warn { fill: #2a2312; stroke: #fbbf24; stroke-opacity: 0.55; stroke-width: 1.3; }
+    .arrow { stroke: #4b5778; stroke-width: 1.6; fill: none; marker-end: url(#a); }
+    .arrowhot { stroke: #5b8cff; stroke-opacity: 0.85; stroke-width: 1.6; fill: none; marker-end: url(#ah); }
+    .life { stroke: #283258; stroke-width: 1.2; stroke-dasharray: 4 6; }
+  </style>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#4b5778"/></marker>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5b8cff"/></marker>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#fff" stroke-opacity="0.03"/></pattern>
+  </defs>
+  <rect width="1280" height="650" rx="16" fill="#0a0f1c"/>
+  <rect width="1280" height="650" rx="16" fill="url(#grid)"/>
+  <g class="t">
+    <text class="h" x="40" y="52" style="font-size:22px">The hiring pipeline: one pure function decides every move</text>
+    <text class="m x" x="40" y="76">canMoveStage(from, to, by, { reason })</text>
+    <text class="s" x="322" y="76">in domain/pipeline.ts; single moves, bulk moves and withdrawals all share it.</text>
+
+    <rect class="zone" x="28" y="100" width="852" height="146" rx="14" fill="none" stroke="#283258" stroke-dasharray="5 6" stroke-width="1.2"/>
+    <text class="x" x="40" y="122">open stages: forward to any later one</text>
+
+    <path class="arrow" d="M768 150 V138 H138 V146"/>
+    <text class="x" x="310" y="128">back to any earlier open stage (team): a mistaken drag is easy to undo</text>
+
+    <rect class="box" x="48" y="150" width="180" height="76" rx="12"/>
+    <text class="h" x="68" y="180">APPLIED</text>
+    <text class="s" x="68" y="204">Application sent</text>
+    <rect class="box" x="258" y="150" width="180" height="76" rx="12"/>
+    <text class="h" x="278" y="180">SCREENING</text>
+    <text class="s" x="278" y="204">Under review</text>
+    <rect class="box" x="468" y="150" width="180" height="76" rx="12"/>
+    <text class="h" x="488" y="180">INTERVIEW</text>
+    <text class="s" x="488" y="204">Interviewing</text>
+    <rect class="box" x="678" y="150" width="180" height="76" rx="12"/>
+    <text class="h" x="698" y="180">OFFER</text>
+    <text class="s" x="698" y="204">Offer extended</text>
+
+    <path class="arrowhot" d="M228 188 H254"/>
+    <path class="arrowhot" d="M438 188 H464"/>
+    <path class="arrowhot" d="M648 188 H674"/>
+
+    <rect class="ok" x="980" y="142" width="260" height="92" rx="12"/>
+    <text class="h" x="1000" y="174">HIRED (final)</text>
+    <text class="s" x="1000" y="198">candidate sees: Hired</text>
+    <text class="x" x="1000" y="220">may become a rated engagement</text>
+    <path class="arrowhot" d="M880 188 H976"/>
+    <text class="x" x="888" y="178">from any</text>
+    <text class="x" x="888" y="208">open stage</text>
+
+    <rect class="bad" x="160" y="290" width="340" height="88" rx="12"/>
+    <text class="h" x="180" y="322">REJECTED</text>
+    <text class="s" x="180" y="346">team only, a reason is required</text>
+    <text class="x" x="180" y="366">candidate sees: Not selected</text>
+    <path class="arrow" d="M230 246 V286"/>
+    <text class="x" x="40" y="272">any open stage</text>
+    <path class="arrow" d="M400 290 V230"/>
+    <text class="x" x="410" y="272">reopen into SCREENING only</text>
+
+    <rect class="warn" x="620" y="290" width="340" height="88" rx="12"/>
+    <text class="h" x="640" y="322">WITHDRAWN (final)</text>
+    <text class="s" x="640" y="346">the candidate only, from any open stage</text>
+    <text class="x" x="640" y="366">the team can never withdraw a card</text>
+    <path class="arrow" d="M790 246 V286"/>
+
+    <rect class="hot" x="40" y="414" width="380" height="124" rx="12"/>
+    <text class="h" x="60" y="446">Live board (team)</text>
+    <text class="s" x="60" y="470">every column in one window query</text>
+    <text class="s" x="60" y="490">pipeline:card to job:&lt;id&gt; on every move,</text>
+    <text class="s" x="60" y="510">application, withdrawal and note</text>
+    <text class="x" x="60" y="528">bulk move: up to 100 cards, one transaction</text>
+
+    <rect class="box" x="450" y="414" width="380" height="124" rx="12"/>
+    <text class="h" x="470" y="446">Team notes and ratings</text>
+    <text class="s" x="470" y="470">notes belong to the company, rating 1 to 5</text>
+    <text class="s" x="470" y="490">the card shows the note count and the</text>
+    <text class="s" x="470" y="510">team's average rating</text>
+    <text class="x" x="470" y="528">other companies never see them</text>
+
+    <rect class="box" x="860" y="414" width="380" height="124" rx="12"/>
+    <text class="h" x="880" y="446">Candidate timeline</text>
+    <text class="s" x="880" y="470">every stage change with its time,</text>
+    <text class="s" x="880" y="490">in plain words, live via user:&lt;id&gt;</text>
+    <text class="s" x="880" y="510">no notes, ratings, scores or reason</text>
+    <text class="x" x="880" y="528">GET /api/applications/mine</text>
+
+    <text class="x" x="40" y="584">A refused move is 409: SAME_STAGE, STAGE_FINAL, STAGE_NOT_ALLOWED or REASON_REQUIRED. A move is a conditional UPDATE ... WHERE stage = :from,</text>
+    <text class="x" x="40" y="606">so when two teammates race, one wins and the other gets 409 APPLICATION_CHANGED instead of a silent overwrite. A bulk move with any refusal rolls back whole.</text>
+  </g>
+</svg>

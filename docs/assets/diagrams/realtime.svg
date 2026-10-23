@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="t d">
+  <title id="t">Real-time pipeline card move</title>
+  <desc id="d">Recruiter A drags a card on a job's pipeline board. The API checks canMoveStage, moves the card in a transaction with a conditional update and, after commit, emits pipeline:card to the job room and application:stage to the candidate's user room. The Redis adapter carries both events to sockets on every API task; the worker emits the same way through the Redis emitter.</desc>
+  <style>
+    .t { font-family: Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif; }
+    .m { font-family: JetBrains Mono, SFMono-Regular, Menlo, monospace; }
+    .h { font-size: 16px; font-weight: 650; fill: #edf1ff; }
+    .s { font-size: 13px; fill: #97a3c2; }
+    .x { font-size: 12px; fill: #6f7b9c; }
+    .box { fill: #111833; stroke: #283258; stroke-width: 1.2; }
+    .hot { fill: #111d3d; stroke: #5b8cff; stroke-opacity: 0.6; stroke-width: 1.4; }
+    .bad { fill: #2a1420; stroke: #f87171; stroke-opacity: 0.55; stroke-width: 1.3; }
+    .ok { fill: #0f2421; stroke: #34d399; stroke-opacity: 0.5; stroke-width: 1.3; }
+    .warn { fill: #2a2312; stroke: #fbbf24; stroke-opacity: 0.55; stroke-width: 1.3; }
+    .arrow { stroke: #4b5778; stroke-width: 1.6; fill: none; marker-end: url(#a); }
+    .arrowhot { stroke: #5b8cff; stroke-opacity: 0.85; stroke-width: 1.6; fill: none; marker-end: url(#ah); }
+    .life { stroke: #283258; stroke-width: 1.2; stroke-dasharray: 4 6; }
+  </style>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#4b5778"/></marker>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5b8cff"/></marker>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#fff" stroke-opacity="0.03"/></pattern>
+  </defs>
+  <rect width="1280" height="640" rx="16" fill="#0a0f1c"/>
+  <rect width="1280" height="640" rx="16" fill="url(#grid)"/>
+  <g class="t">
+    <text class="h" x="40" y="52" style="font-size:22px">A card move, from drag to every screen</text>
+    <text class="s" x="40" y="76">Writes go through HTTP; delivery goes through sockets, only after the transaction commits. Teammates see the card, the candidate sees the stage.</text>
+
+    <rect class="box" x="40" y="128" width="230" height="104" rx="12"/>
+    <text class="h" x="60" y="162">Recruiter A (board)</text>
+    <text class="m x" x="60" y="188">POST /api/applications</text>
+    <text class="m x" x="60" y="206">  /:id/move { to }</text>
+
+    <rect class="hot" x="320" y="110" width="340" height="236" rx="12"/>
+    <text class="h" x="340" y="144">API task A</text>
+    <text class="s" x="340" y="170">1. canMoveStage(from, to, TEAM, reason)</text>
+    <text class="s" x="340" y="194">2. BEGIN; lock the row FOR UPDATE;</text>
+    <text class="s" x="358" y="213">UPDATE ... WHERE stage = :from;</text>
+    <text class="s" x="358" y="232">event row + audit; COMMIT</text>
+    <text class="s" x="340" y="256">3. effects.flush() after commit:</text>
+    <text class="m x" x="358" y="280">emit job:&lt;id&gt;: pipeline:card</text>
+    <text class="m x" x="358" y="300">emit user:&lt;cand&gt;: application:stage</text>
+    <text class="m x" x="358" y="320">notify(): notification:new</text>
+
+    <rect class="box" x="720" y="128" width="250" height="78" rx="12"/>
+    <text class="h" x="740" y="160">PostgreSQL</text>
+    <text class="s" x="740" y="184">applications, application_events</text>
+
+    <rect class="hot" x="560" y="400" width="300" height="100" rx="12"/>
+    <text class="h" x="580" y="434">Redis</text>
+    <text class="s" x="580" y="458">Socket.IO adapter pub/sub,</text>
+    <text class="s" x="580" y="478">reaches sockets on every API task</text>
+
+    <rect class="box" x="960" y="240" width="280" height="118" rx="12"/>
+    <text class="h" x="980" y="274">Recruiters B, C (boards)</text>
+    <text class="s" x="980" y="298">sockets on any API task, in</text>
+    <text class="m x" x="980" y="320">room job:&lt;id&gt;</text>
+    <text class="s" x="980" y="344">card slides to Interview, live</text>
+
+    <rect class="box" x="960" y="400" width="280" height="136" rx="12"/>
+    <text class="h" x="980" y="434">Candidate</text>
+    <text class="m x" x="980" y="458">room user:&lt;id&gt;</text>
+    <text class="s" x="980" y="482">timeline: "Interviewing", with time</text>
+    <text class="s" x="980" y="502">team notes and ratings are never</text>
+    <text class="s" x="980" y="520">sent to this room</text>
+
+    <rect class="box" x="40" y="420" width="360" height="116" rx="12"/>
+    <text class="h" x="60" y="454">worker</text>
+    <text class="s" x="60" y="478">import.run, feed.fanout, moderation.scan</text>
+    <text class="s" x="60" y="498">emit through @socket.io/redis-emitter:</text>
+    <text class="m x" x="60" y="520">import:status, feed:new-posts</text>
+
+    <path class="arrowhot" d="M270 170 H316"/>
+    <path class="arrow" d="M316 220 H274" stroke-dasharray="5 5"/>
+    <text class="s" x="40" y="262">409 APPLICATION_CHANGED</text>
+    <text class="x" x="40" y="282">if a teammate moved it first;</text>
+    <text class="x" x="40" y="300">nothing is emitted on rollback</text>
+    <path class="arrow" d="M660 168 H716"/>
+    <path class="arrowhot" d="M580 346 C580 372 610 382 620 396"/>
+    <path class="arrowhot" d="M860 430 C910 430 910 300 956 300"/>
+    <path class="arrowhot" d="M860 468 H956"/>
+    <path class="arrow" d="M400 478 C470 478 500 450 556 450"/>
+
+    <text class="x" x="40" y="584">Rooms: job:&lt;id&gt; is joined through job:subscribe and granted only to an ACTIVE recruiter of the job's company; user:&lt;id&gt; is joined automatically.</text>
+    <text class="x" x="40" y="606">Delivery is after commit and at most once; a board or timeline that reconnects refetches over REST. ALB stickiness keeps long-polling on one task.</text>
+  </g>
+</svg>

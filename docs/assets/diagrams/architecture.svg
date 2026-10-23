@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="760" viewBox="0 0 1280 760" role="img" aria-labelledby="t d">
+  <title id="t">Euron Open Talent architecture</title>
+  <desc id="d">Browsers reach one host through CloudFront with WAF and an application load balancer. Page requests go to the web service; /api and /socket.io go to the sticky API service. The API and the worker run on ECS Fargate and share RDS PostgreSQL, ElastiCache Redis (BullMQ, the Socket.IO adapter, rate limits), a private SSE-KMS S3 bucket, SES, Secrets Manager, KMS and CloudWatch. The worker and the API call a pluggable AI provider, OpenAI by default. Locally the same Terraform runs against Floci.</desc>
+  <style>
+    .t { font-family: Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif; }
+    .m { font-family: JetBrains Mono, SFMono-Regular, Menlo, monospace; }
+    .h { font-size: 17px; font-weight: 650; fill: #edf1ff; }
+    .s { font-size: 13px; fill: #97a3c2; }
+    .x { font-size: 12px; fill: #6f7b9c; }
+    .box { fill: #111833; stroke: #283258; stroke-width: 1.2; }
+    .hot { fill: #111d3d; stroke: #5b8cff; stroke-opacity: 0.6; stroke-width: 1.4; }
+    .aws { fill: #141a28; stroke: #34405c; stroke-width: 1.2; }
+    .zone { fill: none; stroke: #283258; stroke-dasharray: 5 6; stroke-width: 1.2; }
+    .arrow { stroke: #4b5778; stroke-width: 1.6; fill: none; marker-end: url(#a); }
+    .arrowhot { stroke: #5b8cff; stroke-opacity: 0.85; stroke-width: 1.6; fill: none; marker-end: url(#ah); }
+  </style>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#4b5778"/></marker>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5b8cff"/></marker>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#fff" stroke-opacity="0.03"/></pattern>
+  </defs>
+  <rect width="1280" height="760" rx="16" fill="#0a0f1c"/>
+  <rect width="1280" height="760" rx="16" fill="url(#grid)"/>
+
+  <g class="t">
+    <text class="h" x="40" y="52" style="font-size:22px">How the pieces fit</text>
+    <text class="s" x="40" y="76">One host for the browser: pages, the REST API and the websocket share an origin, so the refresh cookie stays first-party.</text>
+
+    <!-- People -->
+    <rect class="box" x="40" y="128" width="200" height="84" rx="12"/>
+    <text class="h" x="60" y="162">Candidates</text>
+    <text class="s" x="60" y="186">profile, jobs, network,</text>
+    <text class="s" x="60" y="203">messages, feed</text>
+
+    <rect class="box" x="40" y="226" width="200" height="84" rx="12"/>
+    <text class="h" x="60" y="260">Recruiters</text>
+    <text class="s" x="60" y="284">verified team: search,</text>
+    <text class="s" x="60" y="301">approaches, pipeline</text>
+
+    <rect class="box" x="40" y="324" width="200" height="84" rx="12"/>
+    <text class="h" x="60" y="358">Staff</text>
+    <text class="s" x="60" y="382">/admin control plane,</text>
+    <text class="s" x="60" y="399">moderation desk</text>
+
+    <!-- Edge -->
+    <rect class="aws" x="290" y="128" width="200" height="92" rx="12"/>
+    <text class="h" x="310" y="162">CloudFront</text>
+    <text class="s" x="310" y="186">+ WAF, WebSocket</text>
+    <text class="s" x="310" y="203">upgrade on /socket.io</text>
+
+    <rect class="aws" x="290" y="256" width="200" height="152" rx="12"/>
+    <text class="h" x="310" y="290">Load balancer</text>
+    <text class="s" x="310" y="314">TLS, one host,</text>
+    <text class="s" x="310" y="332">path rules</text>
+    <text class="s" x="310" y="356">sticky api target,</text>
+    <text class="s" x="310" y="374">idle timeout 120 s</text>
+    <text class="x" x="310" y="396">public subnets</text>
+
+    <path class="arrow" d="M240 170 H286"/>
+    <path class="arrow" d="M240 268 C266 268 262 196 286 196"/>
+    <path class="arrow" d="M240 366 C272 366 262 206 286 206"/>
+    <path class="arrow" d="M390 220 V252"/>
+
+    <!-- Services -->
+    <rect class="zone" x="536" y="104" width="338" height="500" rx="14"/>
+    <text class="x" x="552" y="126">ECS Fargate, private subnets</text>
+
+    <rect class="box" x="556" y="140" width="298" height="88" rx="12"/>
+    <text class="h" x="576" y="174">web</text>
+    <text class="s" x="576" y="196">Next.js, every page, /env.js, CSP</text>
+    <text class="m x" x="576" y="215">/  (default rule)</text>
+
+    <rect class="hot" x="556" y="248" width="298" height="150" rx="12"/>
+    <text class="h" x="576" y="282">api</text>
+    <text class="s" x="576" y="304">Express 5 REST + Socket.IO gateway</text>
+    <text class="s" x="576" y="324">auth, rules, after-commit effects</text>
+    <text class="m x" x="576" y="350">/api/*  /socket.io/*  /up</text>
+    <text class="x" x="576" y="374">sticky target group</text>
+    <text class="x" x="576" y="390">2 to 10 tasks, scales on CPU</text>
+
+    <rect class="box" x="556" y="418" width="298" height="166" rx="12"/>
+    <text class="h" x="576" y="452">worker</text>
+    <text class="s" x="576" y="474">BullMQ: moderation, media, import,</text>
+    <text class="s" x="576" y="492">feed, notifications, maintenance</text>
+    <text class="s" x="576" y="516">emits through the Redis emitter</text>
+    <text class="x" x="576" y="542">same image, node dist/worker.js</text>
+    <text class="x" x="576" y="560">2 to 6 tasks</text>
+
+    <path class="arrow" d="M490 300 C524 300 524 184 552 184"/>
+    <path class="arrowhot" d="M490 330 H552"/>
+
+    <!-- Data -->
+    <rect class="aws" x="926" y="112" width="314" height="72" rx="12"/>
+    <text class="h" x="946" y="142">PostgreSQL 16 (RDS)</text>
+    <text class="s" x="946" y="166">every record, Multi-AZ in prod</text>
+
+    <rect class="hot" x="926" y="196" width="314" height="92" rx="12"/>
+    <text class="h" x="946" y="226">Redis 7 (ElastiCache)</text>
+    <text class="s" x="946" y="250">BullMQ, Socket.IO adapter, presence,</text>
+    <text class="s" x="946" y="270">rate limits; TLS + AUTH</text>
+
+    <rect class="aws" x="926" y="300" width="314" height="72" rx="12"/>
+    <text class="h" x="946" y="330">S3 media bucket</text>
+    <text class="s" x="946" y="354">private, SSE-KMS, versioned</text>
+
+    <rect class="aws" x="926" y="384" width="152" height="72" rx="12"/>
+    <text class="h" x="944" y="414">SES v2</text>
+    <text class="s" x="944" y="438">DKIM, digests</text>
+
+    <rect class="aws" x="1088" y="384" width="152" height="72" rx="12"/>
+    <text class="h" x="1106" y="414">KMS</text>
+    <text class="s" x="1106" y="438">one customer key</text>
+
+    <rect class="aws" x="926" y="468" width="152" height="72" rx="12"/>
+    <text class="h" x="944" y="498">Secrets</text>
+    <text class="s" x="944" y="522">app keys, DB, Redis</text>
+
+    <rect class="aws" x="1088" y="468" width="152" height="72" rx="12"/>
+    <text class="h" x="1106" y="498">CloudWatch</text>
+    <text class="s" x="1106" y="522">logs, alarms, SNS</text>
+
+    <rect class="box" x="926" y="552" width="314" height="84" rx="12"/>
+    <text class="h" x="946" y="582">AI provider</text>
+    <text class="s" x="946" y="604">OpenAI by default; Gemini, stub, none</text>
+    <text class="x" x="946" y="622">import, badges, polish, moderation</text>
+
+    <path class="arrow" d="M854 270 C894 270 894 148 922 148"/>
+    <path class="arrowhot" d="M854 300 C894 300 894 236 922 236"/>
+    <path class="arrow" d="M854 336 H922"/>
+    <path class="arrowhot" d="M854 450 C900 450 890 262 922 262"/>
+    <path class="arrow" d="M854 490 C894 490 894 420 922 420"/>
+    <path class="arrow" d="M854 560 C894 560 894 594 922 594"/>
+    <path class="arrow" d="M854 386 C904 386 880 580 922 580" stroke-dasharray="5 5"/>
+
+    <!-- Browser to S3 directly -->
+    <path class="arrow" d="M40 196 H22 V660 H1258 V336 H1244" stroke-dasharray="5 5"/>
+    <text class="s" x="300" y="652">browsers upload and download media straight from S3 with short-lived presigned URLs</text>
+
+    <text class="x" x="40" y="704">Dashed: the API calls the AI provider only for polish; imports and scans run in the worker.</text>
+    <text class="x" x="40" y="726">Local: the same Terraform against Floci (S3, SES, KMS, Secrets Manager), with the containers under Docker Compose.</text>
+  </g>
+</svg>

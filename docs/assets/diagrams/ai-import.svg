@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="650" viewBox="0 0 1280 650" role="img" aria-labelledby="t d">
+  <title id="t">AI profile import</title>
+  <desc id="d">Text, a PDF or DOCX, or a voice note is uploaded to the private bucket with purpose IMPORT. A BullMQ job carries only the import id; the worker extracts text in process or transcribes audio, asks the provider (OpenAI by default, Gemini, the stub or none) for output constrained by a JSON schema, sanitises it, keeps only badges with a verbatim evidence quote and confidence of at least 0.6, and the owner reviews and applies section by section. Personal input is purged from the stored proposal.</desc>
+  <style>
+    .t { font-family: Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif; }
+    .m { font-family: JetBrains Mono, SFMono-Regular, Menlo, monospace; }
+    .h { font-size: 16px; font-weight: 650; fill: #edf1ff; }
+    .s { font-size: 13px; fill: #97a3c2; }
+    .x { font-size: 12px; fill: #6f7b9c; }
+    .box { fill: #111833; stroke: #283258; stroke-width: 1.2; }
+    .hot { fill: #111d3d; stroke: #5b8cff; stroke-opacity: 0.6; stroke-width: 1.4; }
+    .bad { fill: #2a1420; stroke: #f87171; stroke-opacity: 0.55; stroke-width: 1.3; }
+    .ok { fill: #0f2421; stroke: #34d399; stroke-opacity: 0.5; stroke-width: 1.3; }
+    .warn { fill: #2a2312; stroke: #fbbf24; stroke-opacity: 0.55; stroke-width: 1.3; }
+    .arrow { stroke: #4b5778; stroke-width: 1.6; fill: none; marker-end: url(#a); }
+    .arrowhot { stroke: #5b8cff; stroke-opacity: 0.85; stroke-width: 1.6; fill: none; marker-end: url(#ah); }
+    .life { stroke: #283258; stroke-width: 1.2; stroke-dasharray: 4 6; }
+  </style>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#4b5778"/></marker>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5b8cff"/></marker>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#fff" stroke-opacity="0.03"/></pattern>
+  </defs>
+  <rect width="1280" height="650" rx="16" fill="#0a0f1c"/>
+  <rect width="1280" height="650" rx="16" fill="url(#grid)"/>
+  <g class="t">
+    <text class="h" x="40" y="52" style="font-size:22px">AI import: the model proposes, the owner decides</text>
+    <text class="s" x="40" y="76">Nothing the model writes reaches a profile unchecked: the schema is a request, the sanitiser decides what is kept, and nothing is published for you.</text>
+
+    <rect class="box" x="40" y="120" width="272" height="110" rx="12"/>
+    <text class="h" x="60" y="150">Text, PDF, DOCX or voice</text>
+    <text class="s" x="60" y="174">pasted text, a resume file,</text>
+    <text class="s" x="60" y="193">a photo of one, or a voice note</text>
+    <text class="x" x="60" y="214">the /profile/setup wizard</text>
+
+    <rect class="box" x="348" y="120" width="272" height="110" rx="12"/>
+    <text class="h" x="368" y="150">Private S3, purpose IMPORT</text>
+    <text class="s" x="368" y="174">presigned PUT, then size and</text>
+    <text class="s" x="368" y="193">magic bytes checked</text>
+    <text class="x" x="368" y="214">readable by the owner and staff only</text>
+
+    <rect class="hot" x="656" y="120" width="272" height="110" rx="12"/>
+    <text class="h" x="676" y="150">import.run on BullMQ</text>
+    <text class="s" x="676" y="174">POST /me/imports: 202 QUEUED</text>
+    <text class="s" x="676" y="193">the job carries only the import id</text>
+    <text class="x" x="676" y="214">worker reads the file by storage key</text>
+
+    <rect class="box" x="964" y="120" width="272" height="110" rx="12"/>
+    <text class="h" x="984" y="150">Extract or transcribe</text>
+    <text class="s" x="984" y="174">PDF and DOCX: text in process</text>
+    <text class="s" x="984" y="193">audio: transcribed first</text>
+    <text class="x" x="984" y="214">NUL bytes out, 30000 characters max</text>
+
+    <path class="arrow" d="M312 175 H344"/>
+    <path class="arrowhot" d="M620 175 H652"/>
+    <path class="arrow" d="M928 175 H960"/>
+    <path class="arrow" d="M1100 230 V262 H176 V296"/>
+
+    <rect class="hot" x="40" y="300" width="272" height="110" rx="12"/>
+    <text class="h" x="60" y="330">Provider + JSON schema</text>
+    <text class="s" x="60" y="354">OpenAI by default, Gemini,</text>
+    <text class="s" x="60" y="373">the stub, or none (UI hidden)</text>
+    <text class="x" x="60" y="394">strict schema, 90 s timeout</text>
+
+    <rect class="box" x="348" y="300" width="272" height="110" rx="12"/>
+    <text class="h" x="368" y="330">Sanitise everything</text>
+    <text class="s" x="368" y="354">safeUrl: http(s) only, no tricks</text>
+    <text class="s" x="368" y="373">months must be a valid YYYY-MM</text>
+    <text class="x" x="368" y="394">emails and phone numbers stripped</text>
+
+    <rect class="warn" x="656" y="300" width="272" height="110" rx="12"/>
+    <text class="h" x="676" y="330">Evidence-gated badges</text>
+    <text class="s" x="676" y="354">quote must appear verbatim</text>
+    <text class="s" x="676" y="373">confidence &gt;= 0.6, at most 5</text>
+    <text class="x" x="676" y="394">seniority comes from dates, not the model</text>
+
+    <rect class="ok" x="964" y="300" width="272" height="110" rx="12"/>
+    <text class="h" x="984" y="330">Review, then apply</text>
+    <text class="s" x="984" y="354">the owner picks section by section</text>
+    <text class="s" x="984" y="373">basics, experience, skills, badges</text>
+    <text class="x" x="984" y="394">applying never publishes the profile</text>
+
+    <path class="arrowhot" d="M312 355 H344"/>
+    <path class="arrow" d="M620 355 H652"/>
+    <path class="arrow" d="M928 355 H960"/>
+    <path class="arrow" d="M1100 410 V446"/>
+
+    <rect class="box" x="40" y="450" width="888" height="120" rx="12"/>
+    <text class="h" x="60" y="480">Live progress, to the owner only</text>
+    <g class="m" font-size="12">
+      <rect x="60" y="494" width="132" height="28" rx="8" fill="#16204a" stroke="#2c3866"/><text x="126" y="512" text-anchor="middle" fill="#97a3c2">QUEUED</text>
+      <rect x="228" y="494" width="132" height="28" rx="8" fill="#16204a" stroke="#2c3866"/><text x="294" y="512" text-anchor="middle" fill="#97a3c2">EXTRACTING</text>
+      <rect x="396" y="494" width="132" height="28" rx="8" fill="#16204a" stroke="#2c3866"/><text x="462" y="512" text-anchor="middle" fill="#97a3c2">GENERATING</text>
+      <rect x="564" y="494" width="132" height="28" rx="8" fill="#16204a" stroke="#2c3866"/><text x="630" y="512" text-anchor="middle" fill="#97a3c2">SCORING</text>
+      <rect x="732" y="494" width="132" height="28" rx="8" fill="#0f2421" stroke="#34d399" stroke-opacity="0.5"/><text x="798" y="512" text-anchor="middle" fill="#97a3c2">READY</text>
+    </g>
+    <path class="arrow" d="M192 508 H224"/>
+    <path class="arrow" d="M360 508 H392"/>
+    <path class="arrow" d="M528 508 H560"/>
+    <path class="arrow" d="M696 508 H728"/>
+    <text class="s" x="60" y="552">import:status to user:&lt;id&gt; through the worker's Redis emitter; READY also notifies. Any failure: FAILED, profile untouched.</text>
+
+    <rect class="box" x="964" y="450" width="272" height="120" rx="12"/>
+    <text class="h" x="984" y="480">PII purged</text>
+    <text class="s" x="984" y="504">on apply: input text and upload</text>
+    <text class="s" x="984" y="523">unlinked, the proposal kept</text>
+    <text class="x" x="984" y="544">not applied: purged after 72 h</text>
+    <text class="x" x="984" y="561">the stored file: deleted after 48 h</text>
+
+    <text class="x" x="40" y="612">A proposal never carries contact details: the owner types those in the editor, and only a consenting candidate shares them with a recruiter.</text>
+  </g>
+</svg>

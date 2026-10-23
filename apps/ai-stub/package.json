@@ -1,0 +1,10 @@
+{
+  "name": "@open-talent/ai-stub",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A dependency-free fake of the OpenAI endpoints the API uses (moderation, chat completions, transcription), for tests and local development.",
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs"
+  }
+}
